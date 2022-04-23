@@ -1,24 +1,11 @@
 # README for LO_roms_source_alt
 
+#### This repo contains edited copies of a few pieces of the code in LO_roms_source. These are things like machine-specific compilers or NPZD code that could be needed by all users in the LiveOcean group to run ROMS on the hyak supercomputers (e.g. mox and klone).  We put them here to keep them out of LO_roms_source = (\*).  This is so that (\*) can stay unedited, and updated directly from the ROMS git site.
 ---
 
-(*) = LO_roms_source
-
-This directory, LO_roms_source_alt, is a git repo that you clone to klone at the same level as LO, LO_roms_source, etc. It is a place for copies of ROMS code that I need to edit. There are a few categories:
+This directory, LO_roms_source_alt, is a git repo that you clone to klone or mox at the same level as LO, LO_roms_source, etc. It is a place for copies of ROMS code that needed edits in order to run on on those machines. There are a few categories:
 - The compiler instructions, copied from (*)/Compilers.
-- The custom bio code, which goes in npzd_banas. This has its own README.
-- A lightly modified varinfo.yaml.
+- The custom bio code, npzd_banas. This has its own README.
+- A version of varinfo.yaml that is copied from (*)/ROMS/External and then very lightly edited to allow python to parse it.
 
 For all the edited code you can use diff to compare it to the original version in (*).
-
----
-
-#### npzd_banas
-
-This folder started as copies of the Fennel code in (*)/ROMS/Nonlinear/Biology. It also includes External/bio_Fennel.in. Then these files were edited to retain the Fennel code, including NH4 and Chl variables, but modifying the parameters in the .in and the equations in fennel.h to reproduce the Banas/Siedlecki/Davis model as closely as possible, while allowing a separate NH4 pool. All changes in the .h code are denoted with:
-```
-! PM Edit
-[new code]
-! End PM Edit
-```
-The first test of using this will be the uu0kb executable.
