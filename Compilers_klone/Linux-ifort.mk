@@ -37,6 +37,7 @@
 #
 # First the defaults
 #
+         FC_config?= mpif90
                FC := ifort
            FFLAGS := -fp-model precise
            FFLAGS += -heap-arrays
@@ -47,10 +48,11 @@
            INCDIR := /usr/include /usr/local/bin
             SLIBS := -L/usr/local/lib -L/usr/lib
             ULIBS :=
-             LIBS :=
+             LIBS := $(SCRATCH_DIR)/libNLM.a
          ROMS_LIB := -L$(SCRATCH_DIR) -lROMS
        MOD_SUFFIX := mod
-               LD := $(FC)
+              LD  ?= $(shell $(FC_config) -link-info)
+#               LD := $(FC)
           LDFLAGS :=
                AR := ar
           ARFLAGS := r
