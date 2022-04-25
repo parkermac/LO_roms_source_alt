@@ -48,7 +48,7 @@
            INCDIR := /usr/include /usr/local/bin
             SLIBS := -L/usr/local/lib -L/usr/lib
             ULIBS :=
-             LIBS := $(SCRATCH_DIR)/libNLM.a
+             LIBS :=
          ROMS_LIB := -L$(SCRATCH_DIR) -lROMS
        MOD_SUFFIX := mod
               LD  ?= $(shell $(FC_config) -link-info)
