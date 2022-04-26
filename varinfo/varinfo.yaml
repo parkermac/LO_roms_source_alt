@@ -1944,7 +1944,40 @@ metadata:
     type:           nulvar
     add_offset:     0.0d0
     scale:          1.0d0
-
+    
+  - variable:       river_Phyt                                        # Input
+    standard_name:  mole_concentration_of_phytoplankton_transport_expressed_as_nitrogen_into_sea_water_from_rivers
+    long_name:      river runoff phytoplankton
+    units:          millimole_nitrogen meter-3                       # [millimole/m3]
+    field:          river Phyt
+    time:           river_time
+    index_code:     idRtrc(iPhyt_)
+    type:           nulvar
+    add_offset:     0.0d0
+    scale:          1.0d0
+        
+  - variable:       river_Zoop                                        # Input
+    standard_name:  mole_concentration_of_zooplankton_transport_expressed_as_nitrogen_into_sea_water_from_rivers
+    long_name:      river runoff zooplankton
+    units:          millimole_nitrogen meter-3                       # [millimole/m3]
+    field:          river Zoop
+    time:           river_time
+    index_code:     idRtrc(iZoop_)
+    type:           nulvar
+    add_offset:     0.0d0
+    scale:          1.0d0
+    
+  - variable:       river_Chlo                                        # Input
+    standard_name:  mole_concentration_of_chlorophyll_transport_expressed_as_nitrogen_into_sea_water_from_rivers
+    long_name:      river runoff chlorophyll
+    units:          millimole_nitrogen meter-3                       # [millimole/m3]
+    field:          river Chlo
+    time:           river_time
+    index_code:     idRtrc(iChlo_)
+    type:           nulvar
+    add_offset:     0.0d0
+    scale:          1.0d0
+    
   - variable:       river_PO4                                        # Input
     standard_name:  mole_concentration_of_phosphate_transport_into_sea_water_from_rivers
     long_name:      river runoff PO4
