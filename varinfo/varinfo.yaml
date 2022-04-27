@@ -2099,7 +2099,7 @@ metadata:
     add_offset:     0.0d0
     scale:          1.0d0
 
-  - variable:       river_alkalinity                                 # Input
+  - variable:       river_TAlk                                 # Input
     standard_name:  alkalinity_transport_expressed_as_mole_equivalent_into_sea_water_from_rivers
     long_name:      river runoff alkalinity
     units:          milliequivalents meter-3                         # [milliequivalens/m3]
