@@ -1951,7 +1951,7 @@ metadata:
     units:          millimole_nitrogen meter-3                       # [millimole/m3]
     field:          river Phyt
     time:           river_time
-    index_code:     idRtrc(iPhyt_)
+    index_code:     idRtrc(iPhyt)
     type:           nulvar
     add_offset:     0.0d0
     scale:          1.0d0
@@ -1962,18 +1962,18 @@ metadata:
     units:          millimole_nitrogen meter-3                       # [millimole/m3]
     field:          river Zoop
     time:           river_time
-    index_code:     idRtrc(iZoop_)
+    index_code:     idRtrc(iZoop)
     type:           nulvar
     add_offset:     0.0d0
     scale:          1.0d0
     
   - variable:       river_Chlo                                        # Input
-    standard_name:  mole_concentration_of_chlorophyll_transport_expressed_as_nitrogen_into_sea_water_from_rivers
+    standard_name:  mole_concentration_of_chlorophyll_transport_into_sea_water_from_rivers
     long_name:      river runoff chlorophyll
-    units:          millimole_nitrogen meter-3                       # [millimole/m3]
+    units:          milligrams_chlorophyll meter-3                   # [milligrams/m3]
     field:          river Chlo
     time:           river_time
-    index_code:     idRtrc(iChlo_)
+    index_code:     idRtrc(iChlo)
     type:           nulvar
     add_offset:     0.0d0
     scale:          1.0d0
