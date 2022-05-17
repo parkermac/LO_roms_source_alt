@@ -8,3 +8,14 @@ This directory, LO_roms_source_alt, is a git repo that you clone to klone or mox
 - A version of varinfo.yaml that is copied from (*)/ROMS/External and then very lightly edited to allow python to parse it.
 
 For all the edited code you can use diff to compare it to the original version in (*).
+
+---
+
+**NOTE**: if `varinfo.yaml` here is edited then you have to update its parsed version in `LO_data/varinfo/varinfo_list.p`.  There are two ways to do this.  If you just delete the directory LO_data/varinfo it will be automatically created whenever you run the forcing code.  Alternatively (easier) you could go to LO, launch ipython, and do:
+```
+from lo_tools import zrfun
+zrfun.make_verinfo_list()
+```
+You would only need to do this in a place where you are making forcing files, like apogee or perigee.  When you run ROMS on hyak it uses the yaml file.
+
+---
