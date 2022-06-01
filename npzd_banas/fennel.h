@@ -848,6 +848,14 @@
 ! two different bacteria types. If OXYGEN is defined, nitrification is
 ! inhibited at low oxygen concentrations using a Michaelis-Menten term.
 !
+! PM Edit
+! None of this nitrification code was in the Banas etal model because
+! there was no NH4.  Samantha believes that the light limitation may
+! not be correct based on newer results in Shiozaki etal (2016).  For
+! now we will leave the nitrifaction as is, but be aware that if we
+! find too much NH4 accumulating in shallow water then the light
+! limitation may be at fault.
+! End PM Edit
 #ifdef OXYGEN
                 fac2=MAX(Bio(i,k,iOxyg),0.0_r8)     ! O2 max
                 fac3=MAX(fac2/(3.0_r8+fac2),0.0_r8) ! MM for O2 dependence
@@ -1071,15 +1079,16 @@
 #ifdef OXYGEN
           DO k=1,N(ng)
             DO i=Istr,Iend
-              fac1=MAX(Bio(i,k,iOxyg)-6.0_r8,0.0_r8) ! O2 off max
-              fac2=MAX(fac1/(3.0_r8+fac1),0.0_r8) ! MM for O2 dependence
+!              fac1=MAX(Bio(i,k,iOxyg)-6.0_r8,0.0_r8) ! O2 off max
+!              fac2=MAX(fac1/(3.0_r8+fac1),0.0_r8) ! MM for O2 dependence
+! PM Edit (remove oxygen dependence in remineralization)
+              fac1=0.0_r8
+              fac2=1.0_r8
+! End PM Edit
               cff1=dtdays*SDeRRN(ng)*fac2
               cff2=1.0_r8/(1.0_r8+cff1)
               cff3=dtdays*LDeRRN(ng)*fac2
               cff4=1.0_r8/(1.0_r8+cff3)
-! PM Edit: so far all I have done is change the rates, but there are more
-! differences with the Siedlecki code, mainly about water column
-! denitrification in low DO conditions.
               Bio(i,k,iSDeN)=Bio(i,k,iSDeN)*cff2
               Bio(i,k,iLDeN)=Bio(i,k,iLDeN)*cff4
               N_Flux_RemineS=Bio(i,k,iSDeN)*cff1
@@ -1560,7 +1569,6 @@
                 ! use up all the DO, then we assume it is nearly anoxic,
                 ! and so all of the particle flux goes into using up NO3.
                 Bio(i,1,iNO3_)=Bio(i,1,iNO3_)-cff1
-                ! But doesn't it also makes NH4?
             ELSE
                 ! Bio(i,1,iOxyg)=Bio(i,1,iOxyg)-cff1*cff4
                 ! I assume the oxygen step is handled below, but note that
@@ -1616,6 +1624,13 @@
               DO i=Istr,Iend
                 cff1=FC(i,0)*Hz_inv(i,1)
                 Bio(i,1,iTIC_)=Bio(i,1,iTIC_)+cff1
+! PM Edit
+! Adding effect of particle remin on Alkalinity.  We are still a bit
+! uncertain about this.  The Alkalinity adjustment about 17 lines above
+! is, I believe, not executed because we define DENITRIFICATION.
+                Bio(i,1,iTAlk)=Bio(i,1,iTAlk)+2.0_r8*cff1
+! End PM Edit
+                
               END DO
             END IF
             IF (ibio.eq.iPhyt)THEN
