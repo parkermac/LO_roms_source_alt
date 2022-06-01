@@ -1570,9 +1570,7 @@
                 ! and so all of the particle flux goes into using up NO3.
                 Bio(i,1,iNO3_)=Bio(i,1,iNO3_)-cff1
             ELSE
-                ! Bio(i,1,iOxyg)=Bio(i,1,iOxyg)-cff1*cff4
-                ! I assume the oxygen step is handled below, but note that
-                ! the version below uses cff3 instead of cff4.
+                Bio(i,1,iOxyg)=Bio(i,1,iOxyg)-cff1*cff3
                 Bio(i,1,iNH4_)=Bio(i,1,iNH4_)+cff1
                 ! This step is just complete remineralization
             ENDIF
@@ -1595,9 +1593,11 @@
 #  ifdef PO4
                 Bio(i,1,iPO4_)=Bio(i,1,iPO4_)+cff1*R_P2N(ng)
 #  endif
-#  ifdef OXYGEN
-                Bio(i,1,iOxyg)=Bio(i,1,iOxyg)-cff1*cff3
-#  endif
+! PM Edit comment out the Oxyg loss because it is handled about 23 lines above
+! #  ifdef OXYGEN
+!                 Bio(i,1,iOxyg)=Bio(i,1,iOxyg)-cff1*cff3
+! #  endif
+! End PM Edit
 # else
 ! >>> Below here is executed if DENITRIFICATION is NOT defined
                 Bio(i,1,iNH4_)=Bio(i,1,iNH4_)+cff1
