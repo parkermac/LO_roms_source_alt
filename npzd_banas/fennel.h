@@ -1544,7 +1544,7 @@
 !
             cff2=4.0_r8/16.0_r8
 # ifdef OXYGEN
-            cff3=115.0_r8/16.0_r8
+            cff3=108.0_r8/16.0_r8
             cff4=106.0_r8/16.0_r8
 # endif
             IF ((ibio.eq.iPhyt).or.                                     &
@@ -1561,18 +1561,33 @@
 ! PM Edit
 ! Here we are guided by results from benthic flux chamber experiments
 ! on the Oregon Shelf, reported in Fuchsman et al. (2015), ECSS 163.
+! We also added lines for the denitrification diagnostic at two places,
+! first for cff1 ans then for NO3loss.
                 NO3loss=1.2_r8*dtdays*Hz_inv(i,1)
 #  ifdef OXYGEN
-            IF((FC(i,0)*rOxNO3).gt.Bio(i,1,iOxyg))THEN
-                ! PM note: I added the rOxNO3 factor (138/16).
+            IF(FC(i,0).gt.Bio(i,1,iOxyg))THEN
+                ! PM note: It would be more correct to write this as
+                ! (FC(i,0)*rOxNO3).gt.Bio(i,1,iOxyg).
                 ! I think that the idea is if remineralization would
                 ! use up all the DO, then we assume it is nearly anoxic,
                 ! and so all of the particle flux goes into using up NO3.
                 Bio(i,1,iNO3_)=Bio(i,1,iNO3_)-cff1
+                
+                #  ifdef DIAGNOSTICS_BIO
+                                DiaBio2d(i,j,iDNIT)=DiaBio2d(i,j,iDNIT)+                &
+                #   ifdef WET_DRY
+                     &                              rmask_full(i,j)*                    &
+                #   endif
+                &                              cff1*Hz(i,j,1)*fiter
+                #  endif
+                
+                
             ELSE
                 Bio(i,1,iOxyg)=Bio(i,1,iOxyg)-cff1*cff3
                 Bio(i,1,iNH4_)=Bio(i,1,iNH4_)+cff1
-                ! This step is just complete remineralization
+                ! This step is just complete remineralization.
+                ! NOTE: in the future it may be more correct to use 106/16
+                ! instead of 108/16.
             ENDIF
 #  else
                 Bio(i,1,iNH4_)=Bio(i,1,iNH4_)+cff1
@@ -1581,15 +1596,26 @@
                 ! If there is enough particle flux to support it, we
                 ! remove NO3 at a rate suggested by Fuchsman et al. (2015).
                 Bio(i,1,iNO3_)=Bio(i,1,iNO3_)-NO3loss
+                
+                #  ifdef DIAGNOSTICS_BIO
+                                DiaBio2d(i,j,iDNIT)=DiaBio2d(i,j,iDNIT)+                &
+                #   ifdef WET_DRY
+                     &                              rmask_full(i,j)*                    &
+                #   endif
+                &                              NO3loss*Hz(i,j,1)*fiter
+                #  endif
+                
+                
             END IF
+! #  ifdef DIAGNOSTICS_BIO
+!                 DiaBio2d(i,j,iDNIT)=DiaBio2d(i,j,iDNIT)+                &
+! #   ifdef WET_DRY
+!      &                              rmask_full(i,j)*                    &
+! #   endif
+! &                              (1.0_r8-cff2)*cff1*Hz(i,j,1)*fiter
+! #  endif
 ! End PM Edit
-#  ifdef DIAGNOSTICS_BIO
-                DiaBio2d(i,j,iDNIT)=DiaBio2d(i,j,iDNIT)+                &
-#   ifdef WET_DRY
-     &                              rmask_full(i,j)*                    &
-#   endif
-     &                              (1.0_r8-cff2)*cff1*Hz(i,j,1)*fiter
-#  endif
+
 #  ifdef PO4
                 Bio(i,1,iPO4_)=Bio(i,1,iPO4_)+cff1*R_P2N(ng)
 #  endif
@@ -1624,11 +1650,11 @@
               DO i=Istr,Iend
                 cff1=FC(i,0)*Hz_inv(i,1)
                 Bio(i,1,iTIC_)=Bio(i,1,iTIC_)+cff1
-! PM Edit
+! PM Edit (still not implemented, just a note for the future)
 ! Adding effect of particle remin on Alkalinity.  We are still a bit
 ! uncertain about this.  The Alkalinity adjustment about 17 lines above
 ! is, I believe, not executed because we define DENITRIFICATION.
-                Bio(i,1,iTAlk)=Bio(i,1,iTAlk)+2.0_r8*cff1
+!                 Bio(i,1,iTAlk)=Bio(i,1,iTAlk)+2.0_r8*cff1
 ! End PM Edit
                 
               END DO
