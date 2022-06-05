@@ -1573,13 +1573,13 @@
                 ! and so all of the particle flux goes into using up NO3.
                 Bio(i,1,iNO3_)=Bio(i,1,iNO3_)-cff1
                 
-                #  ifdef DIAGNOSTICS_BIO
+#  ifdef DIAGNOSTICS_BIO
                                 DiaBio2d(i,j,iDNIT)=DiaBio2d(i,j,iDNIT)+                &
-                #   ifdef WET_DRY
+#   ifdef WET_DRY
                      &                              rmask_full(i,j)*                    &
-                #   endif
+#   endif
                 &                              cff1*Hz(i,j,1)*fiter
-                #  endif
+#  endif
                 
                 
             ELSE
@@ -1597,13 +1597,13 @@
                 ! remove NO3 at a rate suggested by Fuchsman et al. (2015).
                 Bio(i,1,iNO3_)=Bio(i,1,iNO3_)-NO3loss
                 
-                #  ifdef DIAGNOSTICS_BIO
+#  ifdef DIAGNOSTICS_BIO
                                 DiaBio2d(i,j,iDNIT)=DiaBio2d(i,j,iDNIT)+                &
-                #   ifdef WET_DRY
+#   ifdef WET_DRY
                      &                              rmask_full(i,j)*                    &
-                #   endif
+#   endif
                 &                              NO3loss*Hz(i,j,1)*fiter
-                #  endif
+#  endif
                 
                 
             END IF
