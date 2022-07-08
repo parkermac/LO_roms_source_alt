@@ -725,10 +725,16 @@
 !      &               AttFac)*                                           &
 !      &               (z_w(i,j,k)-z_w(i,j,k-1))
 ! PM Edit
-                Att=(AttSW(ng)+                                         &
-     &               AttChl(ng)*Bio(i,k,iChlo)-                         &
-     &               0.0065_r8*(Bio(i,k,isalt)-32.0_r8))*               &
+! This version replicates the attenuation as written in Davis et al. (2014)
+!                 Att=(AttSW(ng)+                                         &
+!      &               AttChl(ng)*Bio(i,k,iChlo)-                         &
+!      &               0.0065_r8*(Bio(i,k,isalt)-32.0_r8))*               &
+!      &               (z_w(i,j,k)-z_w(i,j,k-1))
+! This test version replicates BSD as coded
+                Att=(0.0654_r8+                                         &
+     &               0.04_r8*Bio(i,k,iPhyt))*                            &
      &               (z_w(i,j,k)-z_w(i,j,k-1))
+
 ! End PM Edit
                 ExpAtt=EXP(-Att)
                 Itop=PAR
