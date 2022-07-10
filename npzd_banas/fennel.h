@@ -765,7 +765,10 @@
                 cff2=Bio(i,k,iNO3_)*K_NO3(ng)
                 inhNH4=1.0_r8/(1.0_r8+cff1)
                 L_NH4=cff1/(1.0_r8+cff1)
-                L_NO3=cff2*inhNH4/(1.0_r8+cff2)
+!                 L_NO3=cff2*inhNH4/(1.0_r8+cff2)
+! PM Edit add BSD optimum uptake term
+                L_NO3=cff2*inhNH4/(1.0_r8+cff2+2.0_r8*SQRT(cff2))
+! End PM Edit
                 LTOT=L_NO3+L_NH4
 #ifdef PO4
                 cff3=Bio(i,k,iPO4_)*K_PO4(ng)
