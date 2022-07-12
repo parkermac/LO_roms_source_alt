@@ -788,7 +788,11 @@
      &               MAX(MinVal,Bio(i,k,iPO4_))
 #else
                 fac1=dtdays*t_PPmax
-                cff4=fac1*K_NO3(ng)*inhNH4/(1.0_r8+cff2)*Bio(i,k,iPhyt)
+!                 cff4=fac1*K_NO3(ng)*inhNH4/(1.0_r8+cff2)*Bio(i,k,iPhyt)
+! PM Edit add BSD optimum uptake term
+                cff4=fac1*K_NO3(ng)*inhNH4/                             &
+     &               (1.0_r8+cff2+2.0_r8*SQRT(cff2))*Bio(i,k,iPhyt)
+! End PM Edit
                 cff5=fac1*K_NH4(ng)/(1.0_r8+cff1)*Bio(i,k,iPhyt)
 #endif
                 Bio(i,k,iNO3_)=Bio(i,k,iNO3_)/(1.0_r8+cff4)
