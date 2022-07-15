@@ -172,13 +172,19 @@ endif
 
 
 ifdef USE_PIO
-       PIO_INCDIR ?= /opt/intelsoft/openmpi/pio/include
-       PIO_LIBDIR ?= /opt/intelsoft/openmpi/pio/lib
+#       PIO_INCDIR ?= /opt/intelsoft/openmpi/pio/include
+#       PIO_LIBDIR ?= /opt/intelsoft/openmpi/pio/lib
+       PIO_INCDIR ?= /gscratch/macc/local/pio/include
+       PIO_LIBDIR ?= /gscratch/macc/local/pio/lib
+
            FFLAGS += -I$(PIO_INCDIR)
              LIBS += -L$(PIO_LIBDIR) -lpiof -lpioc
 
-   PNETCDF_INCDIR ?= /opt/intelsoft/openmpi/pnetcdf/include
-   PNETCDF_LIBDIR ?= /opt/intelsoft/openmpi/pnetcdf/lib
+#   PNETCDF_INCDIR ?= /opt/intelsoft/openmpi/pnetcdf/include
+#   PNETCDF_LIBDIR ?= /opt/intelsoft/openmpi/pnetcdf/lib
+   PNETCDF_INCDIR ?= /gscratch/macc/local/pnetcdf/include
+   PNETCDF_LIBDIR ?= /gscratch/macc/local/pnetcdf/lib
+
            FFLAGS += -I$(PNETCDF_INCDIR)
              LIBS += -L$(PNETCDF_LIBDIR) -lpnetcdf
 endif
