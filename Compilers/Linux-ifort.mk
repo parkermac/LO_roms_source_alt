@@ -201,11 +201,19 @@ ifdef USE_SCORPIO
              LIBS += -L$(PNETCDF_LIBDIR) -lpnetcdf
 endif
 
+# ifdef USE_NETCDF4
+#         NF_CONFIG ?= nf-config
+#     NETCDF_INCDIR ?= $(shell $(NF_CONFIG) --prefix)/include
+#              LIBS += $(shell $(NF_CONFIG) --flibs)
+#            INCDIR += $(NETCDF_INCDIR) $(INCDIR)
 ifdef USE_NETCDF4
         NF_CONFIG ?= nf-config
+        NC_CONFIG ?= nc-config
     NETCDF_INCDIR ?= $(shell $(NF_CONFIG) --prefix)/include
              LIBS += $(shell $(NF_CONFIG) --flibs)
+             LIBS += $(shell $(NC_CONFIG) --libs)
            INCDIR += $(NETCDF_INCDIR) $(INCDIR)
+           INCDIR += -I/gscratch/macc/local/netcdf-icc/include
 else
     NETCDF_INCDIR ?= /opt/intelsoft/serial/netcdf3/include
     NETCDF_LIBDIR ?= /opt/intelsoft/serial/netcdf3/lib
