@@ -1571,7 +1571,7 @@
             Bio(i,1,iOxyg)=Bio(i,1,iOxyg)-cff1_ae*rOxNH4
             ! anaerobic pathway, using an ad hoc backward-implicit step
             this_denit=cff1_an*cff_denit
-            cff_bi=1.0_r8/(1.0r8+(this_denit/(Bio(i,1,iNO3_)+0.000001_r8))
+            cff_bi=1.0_r8/(1.0_r8+(this_denit/(Bio(i,1,iNO3_)+0.000001_r8))
             Bio(i,1,iNO3_)=Bio(i,1,iNO3_)*cff_bi
             ! sum of both pathways
             Bio(i,1,iNH4_)=Bio(i,1,iNH4_)+cff1
