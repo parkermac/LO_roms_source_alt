@@ -611,18 +611,6 @@
             END DO
           END DO
         END DO
-! PM Edit
-! Commented out this section. Sam did not like it.
-! #ifdef CARBON
-!         DO k=1,N(ng)
-!           DO i=Istr,Iend
-!             Bio_old(i,k,iTIC_)=MIN(Bio_old(i,k,iTIC_),3000.0_r8)
-!             Bio_old(i,k,iTIC_)=MAX(Bio_old(i,k,iTIC_),400.0_r8)
-!             Bio(i,k,iTIC_)=Bio_old(i,k,iTIC_)
-!           END DO
-!         END DO
-! #endif
-! End PM Edit
 !
 !  Extract potential temperature and salinity.
 !
@@ -1568,7 +1556,7 @@
 ! >>> Start of DENITRIFICATION ifdef
 # ifdef DENITRIFICATION
             ! Set how much of the particle flux goes to the aerobic pathway, and
-            ! how much goes to the anaerobic pathway (denitrification)
+            ! how much goes to the anaerobic pathway (denitrification).
             ae_frac=0.7_r8
             an_frac=1.0_r8-ae_frac
             cff1_ae=cff1*ae_frac
@@ -1670,17 +1658,6 @@
 !  (J. Wilkin and H. Arango, Apr 27, 2012)
 !-----------------------------------------------------------------------
 !
-! PM Edit
-! Commented out this section. Sam did not like it.
-! #ifdef CARBON
-!         DO k=1,N(ng)
-!           DO i=Istr,Iend
-!             Bio(i,k,iTIC_)=MIN(Bio(i,k,iTIC_),3000.0_r8)
-!             Bio(i,k,iTIC_)=MAX(Bio(i,k,iTIC_),400.0_r8)
-!           END DO
-!         END DO
-! #endif
-! End PM Edit
         DO itrc=1,NBT
           ibio=idbio(itrc)
           DO k=1,N(ng)
