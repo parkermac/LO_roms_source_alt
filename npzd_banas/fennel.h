@@ -382,8 +382,11 @@
       real(r8), parameter :: OB2 =-0.0103410_r8
       real(r8), parameter :: OB3 =-0.00817083_r8
       real(r8), parameter :: OC0 =-0.000000488682_r8
-      real(r8), parameter :: rOxNO3= 8.625_r8       ! 138/16
-      real(r8), parameter :: rOxNH4= 6.625_r8       ! 106/16
+!       real(r8), parameter :: rOxNO3= 8.625_r8       ! 138/16
+!       real(r8), parameter :: rOxNH4= 6.625_r8       ! 106/16
+! PM Edit change oxygen uptake and remin values to match Stock et al. (2020)
+      real(r8), parameter :: rOxNO3= 9.375_r8       ! 150/16
+      real(r8), parameter :: rOxNH4= 7.375_r8       ! 118/16
       real(r8) :: l2mol = 1000.0_r8/22.3916_r8      ! liter to mol
 #endif
 #ifdef CARBON
@@ -445,7 +448,8 @@
 
 !       real(r8) :: total_N
 ! PM Edit
-      real(r8) :: total_N, NO3loss
+      real(r8) :: total_N, ae_frac, an_frac, cff1_ae, cff1_an
+      real(r8) :: cff_denit, this_denit, cff_bi
 ! End PM Edit
 
 #ifdef DIAGNOSTICS_BIO
@@ -1544,7 +1548,6 @@
 ! on the Oregon Shelf, reported in Fuchsman et al. (2015), ECSS 163.
 #ifdef BIO_SEDIMENT
 # ifdef OXYGEN
-            cff3=118.0_r8/16.0_r8
             cff4=106.0_r8/16.0_r8
 # endif
             IF ((ibio.eq.iPhyt).or.                                     &
@@ -1565,10 +1568,11 @@
             this_denit=0.0_r8
 #  ifdef OXYGEN
             ! aerobic pathway
-            Bio(i,1,iOxyg)=Bio(i,1,iOxyg)-cff1_ae*cff3
-            ! anaerobic pathway
-            Bio(i,1,iNO3_)=Bio(i,1,iNO3_)-cff1_an*cff_denit
+            Bio(i,1,iOxyg)=Bio(i,1,iOxyg)-cff1_ae*rOxNH4
+            ! anaerobic pathway, using an ad hoc backward-implicit step
             this_denit=cff1_an*cff_denit
+            cff_bi=1.0_r8/(1.0r8+(this_denit/(Bio(i,1,iNO3_)+0.000001_r8))
+            Bio(i,1,iNO3_)=Bio(i,1,iNO3_)*cff_bi
             ! sum of both pathways
             Bio(i,1,iNH4_)=Bio(i,1,iNH4_)+cff1
 #   if defined CARBON && defined TALK_NONCONSERV
@@ -1602,7 +1606,7 @@
                 Bio(i,1,iPO4_)=Bio(i,1,iPO4_)+cff1*R_P2N(ng)
 #   endif
 #  ifdef OXYGEN
-                Bio(i,1,iOxyg)=Bio(i,1,iOxyg)-cff1*cff4
+                Bio(i,1,iOxyg)=Bio(i,1,iOxyg)-cff1*rOxNH4
 #  endif
 #  if defined CARBON && defined TALK_NONCONSERV
                 Bio(i,1,iTAlk)=Bio(i,1,iTAlk)+cff1
@@ -1613,22 +1617,11 @@
             END IF
 
 # ifdef CARBON
-#  ifdef DENITRIFICATION
-            cff3=12.0_r8
-            cff4=0.74_r8
-#  endif
             IF ((ibio.eq.iSDeC).or.                                     &
      &          (ibio.eq.iLDeC))THEN
               DO i=Istr,Iend
                 cff1=FC(i,0)*Hz_inv(i,1)
                 Bio(i,1,iTIC_)=Bio(i,1,iTIC_)+cff1
-! PM Edit (still not implemented, just a note for the future)
-! Adding effect of particle remin on Alkalinity.  We are still a bit
-! uncertain about this.  The Alkalinity adjustment about 17 lines above
-! is, I believe, not executed because we define DENITRIFICATION.
-!                 Bio(i,1,iTAlk)=Bio(i,1,iTAlk)+2.0_r8*cff1
-! End PM Edit
-                
               END DO
             END IF
             IF (ibio.eq.iPhyt)THEN
