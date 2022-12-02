@@ -1549,18 +1549,14 @@
               END DO
             END DO
 
+! PM Edit
+! This benthic flux section has been completely reworked by PM to do a
+! better job of representing observed fluxes.
+! Here we are guided by results from benthic flux chamber experiments
+! on the Oregon Shelf, reported in Fuchsman et al. (2015), ECSS 163.
 #ifdef BIO_SEDIMENT
-!
-!  Particulate flux reaching the seafloor is remineralized and returned
-!  to the dissolved nitrate pool. Without this conversion, particulate
-!  material falls out of the system. This is a temporary fix to restore
-!  total nitrogen conservation. It will be replaced later by a
-!  parameterization that includes the time delay of remineralization
-!  and dissolved oxygen.
-!
-            cff2=4.0_r8/16.0_r8
 # ifdef OXYGEN
-            cff3=108.0_r8/16.0_r8
+            cff3=118.0_r8/16.0_r8
             cff4=106.0_r8/16.0_r8
 # endif
             IF ((ibio.eq.iPhyt).or.                                     &
@@ -1571,75 +1567,46 @@
 
 ! >>> Start of DENITRIFICATION ifdef
 # ifdef DENITRIFICATION
-! The original Fennel code had 25% of the benthic particle flux
-! turned into NH4 (cff2 = 0.25), meaning that 75% was denitrified.
-!                 Bio(i,1,iNH4_)=Bio(i,1,iNH4_)+cff1*cff2
-! PM Edit
-! Here we are guided by results from benthic flux chamber experiments
-! on the Oregon Shelf, reported in Fuchsman et al. (2015), ECSS 163.
-! We also added lines for the denitrification diagnostic at two places,
-! first for cff1 ans then for NO3loss.
-                NO3loss=1.2_r8*dtdays*Hz_inv(i,1)
+            ! Set how much of the particle flux goes to the aerobic pathway, and
+            ! how much goes to the anaerobic pathway (denitrification)
+            ae_frac=0.7_r8
+            an_frac=1.0_r8-ae_frac
+            cff1_ae=cff1*ae_frac
+            cff1_an=cff1*an_frac
+            cff_denit=472.0_r8/(16.0_r8*5.0_r8)
+            this_denit=0.0_r8
 #  ifdef OXYGEN
-            IF(FC(i,0).gt.Bio(i,1,iOxyg))THEN
-                ! PM note: It would be more correct to write this as
-                ! (FC(i,0)*rOxNO3).gt.Bio(i,1,iOxyg).
-                ! I think that the idea is if remineralization would
-                ! use up all the DO, then we assume it is nearly anoxic,
-                ! and so all of the particle flux goes into using up NO3.
-                Bio(i,1,iNO3_)=Bio(i,1,iNO3_)-cff1
-                
-#  ifdef DIAGNOSTICS_BIO
-                                DiaBio2d(i,j,iDNIT)=DiaBio2d(i,j,iDNIT)+                &
-#   ifdef WET_DRY
-                     &                              rmask_full(i,j)*                    &
+            ! aerobic pathway
+            Bio(i,1,iOxyg)=Bio(i,1,iOxyg)-cff1_ae*cff3
+            ! anaerobic pathway
+            Bio(i,1,iNO3_)=Bio(i,1,iNO3_)-cff1_an*cff_denit
+            this_denit=cff1_an*cff_denit
+            ! sum of both pathways
+            Bio(i,1,iNH4_)=Bio(i,1,iNH4_)+cff1
+#   if defined CARBON && defined TALK_NONCONSERV
+            Bio(i,1,iTAlk)=Bio(i,1,iTAlk)+cff1_ae
+            Bio(i,1,iTAlk)=Bio(i,1,iTAlk)+cff1_an*(1.0_r8+cff_denit)
 #   endif
-                &                              cff1*Hz(i,j,1)*fiter
-#  endif
-                
-                
-            ELSE
-                Bio(i,1,iOxyg)=Bio(i,1,iOxyg)-cff1*cff3
-                Bio(i,1,iNH4_)=Bio(i,1,iNH4_)+cff1
-                ! This step is just complete remineralization.
-                ! NOTE: in the future it may be more correct to use 106/16
-                ! instead of 108/16.
-            ENDIF
 #  else
-                Bio(i,1,iNH4_)=Bio(i,1,iNH4_)+cff1
+            ! if OXYGEN is not defined
+            Bio(i,1,iNH4_)=Bio(i,1,iNH4_)+cff1
+#   if defined CARBON && defined TALK_NONCONSERV
+            Bio(i,1,iTAlk)=Bio(i,1,iTAlk)+cff1
+#   endif
 #  endif
-            IF (cff1.gt.NO3loss) THEN
-                ! If there is enough particle flux to support it, we
-                ! remove NO3 at a rate suggested by Fuchsman et al. (2015).
-                Bio(i,1,iNO3_)=Bio(i,1,iNO3_)-NO3loss
-                
+
+! tally up denitrification in the diagnostics
 #  ifdef DIAGNOSTICS_BIO
                                 DiaBio2d(i,j,iDNIT)=DiaBio2d(i,j,iDNIT)+                &
 #   ifdef WET_DRY
                      &                              rmask_full(i,j)*                    &
 #   endif
-                &                              NO3loss*Hz(i,j,1)*fiter
+                &                              this_denit*Hz(i,j,1)*fiter
 #  endif
-                
-                
-            END IF
-! #  ifdef DIAGNOSTICS_BIO
-!                 DiaBio2d(i,j,iDNIT)=DiaBio2d(i,j,iDNIT)+                &
-! #   ifdef WET_DRY
-!      &                              rmask_full(i,j)*                    &
-! #   endif
-! &                              (1.0_r8-cff2)*cff1*Hz(i,j,1)*fiter
-! #  endif
-! End PM Edit
 
 #  ifdef PO4
                 Bio(i,1,iPO4_)=Bio(i,1,iPO4_)+cff1*R_P2N(ng)
 #  endif
-! PM Edit comment out the Oxyg loss because it is handled about 23 lines above
-! #  ifdef OXYGEN
-!                 Bio(i,1,iOxyg)=Bio(i,1,iOxyg)-cff1*cff3
-! #  endif
-! End PM Edit
 # else
 ! >>> Below here is executed if DENITRIFICATION is NOT defined
                 Bio(i,1,iNH4_)=Bio(i,1,iNH4_)+cff1
@@ -1656,6 +1623,7 @@
 ! >>> End of DENITRIFICATION ifdef
               END DO
             END IF
+
 # ifdef CARBON
 #  ifdef DENITRIFICATION
             cff3=12.0_r8
