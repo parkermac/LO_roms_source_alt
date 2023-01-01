@@ -1577,7 +1577,7 @@
             END IF
             ! aerobic pathway
             Bio(i,1,iOxyg)=Bio(i,1,iOxyg)-cff1_ae*rOxNH4
-            Bio(i,1,iNH4_)=Bio(i,1,iNH4_)+cff_ae
+            Bio(i,1,iNH4_)=Bio(i,1,iNH4_)+cff1_ae
             ! anaerobic pathway, using an ad hoc backward-implicit step
             cff_bi=1.0_r8/(1.0_r8+(cff1_an/(Bio(i,1,iNO3_)+0.000001_r8)))
             Bio(i,1,iNO3_)=Bio(i,1,iNO3_)*cff_bi
