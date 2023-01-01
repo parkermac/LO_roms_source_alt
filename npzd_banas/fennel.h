@@ -448,8 +448,7 @@
 
 !       real(r8) :: total_N
 ! PM Edit
-      real(r8) :: total_N, ae_frac, an_frac, cff1_ae, cff1_an
-      real(r8) :: cff_denit, this_denit, cff_bi
+      real(r8) :: cff1_ae, cff1_an, cff_bi
 ! End PM Edit
 
 #ifdef DIAGNOSTICS_BIO
@@ -1547,37 +1546,45 @@
 ! Here we are guided by results from benthic flux chamber experiments
 ! on the Oregon Shelf, reported in Fuchsman et al. (2015), ECSS 163.
 #ifdef BIO_SEDIMENT
-# ifdef OXYGEN
-            cff4=106.0_r8/16.0_r8
-# endif
             IF ((ibio.eq.iPhyt).or.                                     &
      &          (ibio.eq.iSDeN).or.                                     &
      &          (ibio.eq.iLDeN)) THEN
               DO i=Istr,Iend
                 cff1=FC(i,0)*Hz_inv(i,1)
+                NO3loss=1.2_r8*dtdays*Hz_inv(i,1)
 
 ! >>> Start of DENITRIFICATION ifdef
 # ifdef DENITRIFICATION
             ! Set how much of the particle flux goes to the aerobic pathway, and
             ! how much goes to the anaerobic pathway (denitrification).
-            ae_frac=0.7_r8
-            an_frac=1.0_r8-ae_frac
-            cff1_ae=cff1*ae_frac
-            cff1_an=cff1*an_frac
-            cff_denit=472.0_r8/(16.0_r8*5.0_r8)
-            this_denit=0.0_r8
+            IF (cff1.ge.NO3loss) THEN
+              ! Only the excess over NO3loss goes into aerobic pathway.
+              cff1_an=NO3loss
+              cff1_ae=cff1-NO3loss
+            ELSE
+             ! If cff1 is not bigger than NO3loss then everything
+             ! goes into the anaerobic pathway.
+             cff1_an=cff1
+             cff1_ae=0.0_r8
+            END IF
 #  ifdef OXYGEN
+            IF (cff1_ae.gt.(rOxNH4*Bio(i,1,iOxyg))) THEN
+              ! If oxygen is so low that cff1_ae would drive it below
+              ! zero then we override the logic above and everything
+              ! goes to the anaerobic pathway.
+              cff1_an=cff1
+              cff1_ae=0.0_r8
+            END IF
             ! aerobic pathway
             Bio(i,1,iOxyg)=Bio(i,1,iOxyg)-cff1_ae*rOxNH4
+            Bio(i,1,iNH4_)=Bio(i,1,iNH4_)+cff_ae
             ! anaerobic pathway, using an ad hoc backward-implicit step
-            this_denit=cff1_an*cff_denit
-            cff_bi=1.0_r8/(1.0_r8+(this_denit/(Bio(i,1,iNO3_)+0.000001_r8)))
+            cff_bi=1.0_r8/(1.0_r8+(cff1_an/(Bio(i,1,iNO3_)+0.000001_r8)))
             Bio(i,1,iNO3_)=Bio(i,1,iNO3_)*cff_bi
-            ! sum of both pathways
-            Bio(i,1,iNH4_)=Bio(i,1,iNH4_)+cff1
 #   if defined CARBON && defined TALK_NONCONSERV
-            Bio(i,1,iTAlk)=Bio(i,1,iTAlk)+cff1_ae
-            Bio(i,1,iTAlk)=Bio(i,1,iTAlk)+cff1_an*(1.0_r8+cff_denit)
+            ! This is really a placeholder. We need better info about the effect
+            ! of benthic remin on alkalinity.
+            Bio(i,1,iTAlk)=Bio(i,1,iTAlk)+cff1
 #   endif
 #  else
             ! if OXYGEN is not defined
@@ -1593,7 +1600,7 @@
 #   ifdef WET_DRY
                      &                              rmask_full(i,j)*                    &
 #   endif
-                &                              this_denit*Hz(i,j,1)*fiter
+                &                              cff1_an*Hz(i,j,1)*fiter
 #  endif
 
 #  ifdef PO4
