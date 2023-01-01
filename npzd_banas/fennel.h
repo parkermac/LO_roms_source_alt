@@ -448,7 +448,7 @@
 
 !       real(r8) :: total_N
 ! PM Edit
-      real(r8) :: cff1_ae, cff1_an, cff_bi
+      real(r8) :: cff1_ae, cff1_an, cff_bi, NO3loss
 ! End PM Edit
 
 #ifdef DIAGNOSTICS_BIO
