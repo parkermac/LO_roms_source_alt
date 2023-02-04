@@ -382,11 +382,8 @@
       real(r8), parameter :: OB2 =-0.0103410_r8
       real(r8), parameter :: OB3 =-0.00817083_r8
       real(r8), parameter :: OC0 =-0.000000488682_r8
-!       real(r8), parameter :: rOxNO3= 8.625_r8       ! 138/16
-!       real(r8), parameter :: rOxNH4= 6.625_r8       ! 106/16
-! PM Edit change oxygen uptake and remin values to match Stock et al. (2020)
-      real(r8), parameter :: rOxNO3= 9.375_r8       ! 150/16
-      real(r8), parameter :: rOxNH4= 7.375_r8       ! 118/16
+      real(r8), parameter :: rOxNO3= 8.625_r8       ! 138/16
+      real(r8), parameter :: rOxNH4= 6.625_r8       ! 106/16
       real(r8) :: l2mol = 1000.0_r8/22.3916_r8      ! liter to mol
 #endif
 #ifdef CARBON
@@ -1557,7 +1554,7 @@
 # ifdef DENITRIFICATION
             ! Set how much of the particle flux goes to the aerobic pathway, and
             ! how much goes to the anaerobic pathway (denitrification).
-            IF (cff1.ge.NO3loss) THEN
+            IF (cff1.gt.NO3loss) THEN
               ! Only the excess over NO3loss goes into aerobic pathway.
               cff1_an=NO3loss
               cff1_ae=cff1-NO3loss
@@ -1568,7 +1565,7 @@
              cff1_ae=0.0_r8
             END IF
 #  ifdef OXYGEN
-            IF (cff1_ae.gt.(rOxNH4*Bio(i,1,iOxyg))) THEN
+            IF ((cff1_ae*rOxNH4).gt.Bio(i,1,iOxyg)) THEN
               ! If oxygen is so low that cff1_ae would drive it below
               ! zero then we override the logic above and everything
               ! goes to the anaerobic pathway.
@@ -1579,8 +1576,11 @@
             Bio(i,1,iOxyg)=Bio(i,1,iOxyg)-cff1_ae*rOxNH4
             Bio(i,1,iNH4_)=Bio(i,1,iNH4_)+cff1_ae
             ! anaerobic pathway, using an ad hoc backward-implicit step
-            cff_bi=1.0_r8/(1.0_r8+(cff1_an/(Bio(i,1,iNO3_)+0.000001_r8)))
-            Bio(i,1,iNO3_)=Bio(i,1,iNO3_)*cff_bi
+!             cff_bi=1.0_r8/(1.0_r8+(cff1_an/(Bio(i,1,iNO3_)+0.000001_r8)))
+!             Bio(i,1,iNO3_)=Bio(i,1,iNO3_)*cff_bi
+            ! anaerobic pathway, but limited so we don't pull NO3 negative
+            cff1_an = MIN(Bio(i,1,iNO3_),cff1_an)
+            Bio(i,1,iNO3_)=Bio(i,1,iNO3_)-cff1_an
 #   if defined CARBON && defined TALK_NONCONSERV
             ! This is really a placeholder. We need better info about the effect
             ! of benthic remin on alkalinity.
