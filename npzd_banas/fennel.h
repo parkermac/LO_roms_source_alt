@@ -755,9 +755,10 @@
                 cff1=Bio(i,k,iNH4_)*K_NH4(ng)
                 cff2=Bio(i,k,iNO3_)*K_NO3(ng)
                 inhNH4=1.0_r8/(1.0_r8+cff1)
-                L_NH4=cff1/(1.0_r8+cff1)
+!                 L_NH4=cff1/(1.0_r8+cff1)
 !                 L_NO3=cff2*inhNH4/(1.0_r8+cff2)
 ! PM Edit add BSD optimum uptake term
+                L_NH4=cff1/(1.0_r8+cff1+2.0_r8*SQRT(cff1))
                 L_NO3=cff2*inhNH4/(1.0_r8+cff2+2.0_r8*SQRT(cff2))
 ! End PM Edit
                 LTOT=L_NO3+L_NH4
@@ -780,11 +781,13 @@
 #else
                 fac1=dtdays*t_PPmax
 !                 cff4=fac1*K_NO3(ng)*inhNH4/(1.0_r8+cff2)*Bio(i,k,iPhyt)
+!                 cff5=fac1*K_NH4(ng)/(1.0_r8+cff1)*Bio(i,k,iPhyt)
 ! PM Edit add BSD optimum uptake term
                 cff4=fac1*K_NO3(ng)*inhNH4/                             &
      &               (1.0_r8+cff2+2.0_r8*SQRT(cff2))*Bio(i,k,iPhyt)
+                cff5=fac1*K_NH4(ng)/                                    &
+     &               (1.0_r8+cff1+2.0_r8*SQRT(cff1))*Bio(i,k,iPhyt)
 ! End PM Edit
-                cff5=fac1*K_NH4(ng)/(1.0_r8+cff1)*Bio(i,k,iPhyt)
 #endif
                 Bio(i,k,iNO3_)=Bio(i,k,iNO3_)/(1.0_r8+cff4)
                 Bio(i,k,iNH4_)=Bio(i,k,iNH4_)/(1.0_r8+cff5)
