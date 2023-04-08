@@ -19,3 +19,5 @@ zrfun.make_verinfo_list()
 You would only need to do this in a place where you are making forcing files, like apogee or perigee.  When you run ROMS on hyak it uses the yaml file.
 
 ---
+
+NOTE: As of 2023.04.08 I am putting the modified fennel.h code in the [ex_name] folder.
