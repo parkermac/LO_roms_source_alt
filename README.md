@@ -21,3 +21,5 @@ You would only need to do this in a place where you are making forcing files, li
 ---
 
 NOTE: As of 2023.04.08 I am putting the modified fennel.h code in the [ex_name] folder.
+
+**NOTE: 2023.04.20 The version of fennel.h in this folder corresponds to the one in x1b. All further modification will, for the time being, be in [ex-name] folders.**
