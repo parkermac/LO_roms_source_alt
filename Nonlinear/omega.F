@@ -170,6 +170,8 @@
 !
 !    Dsrc(is) = 2,  flow across grid cell w-face (positive or negative)
 !
+! PM Edit 2023.05.02 adding LWSRC_MASS_ONLY cpp option
+#if !defined LWSRC_MASS_ONLY
         IF (LwSrc(ng)) THEN
           DO is=1,Nsrc(ng)
             IF (INT(SOURCES(ng)%Dsrc(is)).eq.2) THEN
@@ -188,6 +190,8 @@
             END IF
           END DO
         END IF
+#endif
+! End PM Edit
 !
         DO i=Istr,Iend
           wrk(i)=W(i,j,N(ng))/(z_w(i,j,N(ng))-z_w(i,j,0))
